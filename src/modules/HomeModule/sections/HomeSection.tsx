@@ -49,7 +49,7 @@ const HomeSection = () => {
             Pelajari Lebih Lanjut
           </a>
           <a
-            href="#kontak"
+            href="campaign"
             className="font-semibold py-3 px-8 rounded-lg text-lg shadow-md transform transition-all duration-300 ease-in-out hover:opacity-90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               backgroundColor: appColors.white,

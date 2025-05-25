@@ -1,8 +1,13 @@
+import RegisterSection from '@/modules/AuthModule/sections/RegisterSection'
 import React from 'react'
+import Navbar from '@/components/layout/Navbar'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <Navbar />
+      <div><RegisterSection /></div>
+    </div>
   )
 }
 

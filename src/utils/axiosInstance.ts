@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_AUTH_SERVICE_LINK,
+  baseURL: 'http://localhost:5000',
 });
 
 // Interceptor untuk menambahkan token ke header

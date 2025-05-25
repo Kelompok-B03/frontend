@@ -4,6 +4,7 @@ import Footer from '@/components/layout/Footer'
 import HomeSection from './sections/HomeSection'
 import AboutSection from './sections/AboutSection'
 import { appColors } from '@/constants/colors'
+import FundraisingSection from './sections/FundraisingSection'
 
 
 const page = () => {
@@ -13,6 +14,7 @@ const page = () => {
       <main>
         <HomeSection />
         <AboutSection />
+        <FundraisingSection />
       </main>
       <Footer />
     </div>

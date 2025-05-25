@@ -9,4 +9,7 @@ export const appColors = {
 
   babyPinkAccent: '#D94A7B',
   babyTurquoiseAccent: '#36A5A0',
+
+  successGreen: '#34D399',
+  successGreenLight: '#A7F3D0'
 };

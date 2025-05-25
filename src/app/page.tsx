@@ -1,5 +1,5 @@
 import React from 'react'
-import HomeModule from '@/modules/HomeModule'
+import HomeModule from '@/modules/HomeModule/page'
 
 const page = () => {
   return (

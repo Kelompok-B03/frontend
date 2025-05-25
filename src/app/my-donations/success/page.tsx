@@ -25,7 +25,7 @@ const DonationSuccessPage = () => {
           Kembali ke Beranda
         </button>
         <button
-          onClick={() => router.push('/donations')}
+          onClick={() => router.push('/my-donations')}
           className="px-6 py-2 rounded"
           style={{ backgroundColor: appColors.babyPinkAccent, color: appColors.white }}
         >

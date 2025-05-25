@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import DonationCard from './DonationCard';
 import { appColors } from '@/constants/colors';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Donation = {
   donationId: string;
@@ -16,15 +17,17 @@ const DonationPage: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchDonations = async () => {
+    if (user?.id) {
+      const fetchDonations = async () => {
       try {
         const token = localStorage.getItem('token')
         const response = await fetch('http://localhost:8080/api/donations/self', {
           headers: {
             'Content-Type': 'application/json',
-            Authentication: `Bearer ${token}`
+            Authorization: `Bearer ${token}`
           },
         });
 
@@ -33,17 +36,18 @@ const DonationPage: React.FC = () => {
         }
 
         const data = await response.json();
-        setDonations(data);
-      } catch (error) {
-        console.error('Error fetching donations:', error);
-        setError('Failed to connect to the server. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+          setDonations(data);
+        } catch (error) {
+          console.error('Error fetching donations:', error);
+          setError('Failed to connect to the server. Please try again later.');
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchDonations();
-  }, []);
+      fetchDonations();
+    }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-white px-4 py-6">

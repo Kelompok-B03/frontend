@@ -11,5 +11,7 @@ export const appColors = {
   babyTurquoiseAccent: '#36A5A0',
 
   successGreen: '#34D399',
-  successGreenLight: '#A7F3D0'
+  successGreenLight: '#A7F3D0',
+
+  errorRedText: '#DC2626'
 };

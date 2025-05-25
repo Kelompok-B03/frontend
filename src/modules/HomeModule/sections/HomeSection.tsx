@@ -42,14 +42,14 @@ const HomeSection = () => {
         </p>
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
           <a
-            href="#fitur"
+            href="#tentang"
             className="text-white font-semibold py-3 px-8 rounded-lg text-lg shadow-md transform transition-all duration-300 ease-in-out hover:opacity-90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{ backgroundColor: appColors.babyTurquoiseAccent }}
           >
             Pelajari Lebih Lanjut
           </a>
           <a
-            href="campaign"
+            href="/campaigns"
             className="font-semibold py-3 px-8 rounded-lg text-lg shadow-md transform transition-all duration-300 ease-in-out hover:opacity-90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               backgroundColor: appColors.white,

@@ -20,11 +20,11 @@ const DonationPage: React.FC = () => {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
+        const token = localStorage.getItem('token')
         const response = await fetch('http://localhost:8080/api/donations/self', {
-          credentials: 'include', // if using cookies
           headers: {
             'Content-Type': 'application/json',
-            // Add Authorization header here if needed
+            Authentication: `Bearer ${token}`
           },
         });
 

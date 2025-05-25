@@ -56,9 +56,26 @@ export default function TopUpSection() {
       setTimeout(() => {
         router.push('/wallet/balance');
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error processing top-up:', error);
-      setError(error.response?.data?.message || 'Failed to process payment. Please try again.');
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'data' in error.response &&
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        'message' in error.response.data &&
+        typeof (error.response.data as { message: unknown }).message === 'string'
+      ) {
+        setError((error.response.data as { message: string }).message);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unexpected error occurred during top-up. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

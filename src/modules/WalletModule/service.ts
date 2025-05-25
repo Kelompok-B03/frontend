@@ -68,7 +68,12 @@ export const getTransactionById = async (userId: string, transactionId: string) 
       { headers: authHeader() }
     );
     
-    const transaction = response.data.content?.find((tx: any) => tx.id === transactionId);
+    const transaction = response.data.content?.find((tx: unknown) => {
+      if (typeof tx === 'object' && tx !== null && 'id' in tx) {
+        return (tx as { id: string }).id === transactionId;
+      }
+      return false;
+    });
     if (!transaction) {
       throw new Error('Transaction not found');
     }

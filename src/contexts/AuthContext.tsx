@@ -97,6 +97,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('is_logged_in');
     setUser(null);
     setToken(null);
     axiosInstance.defaults.headers.common['Authorization'] = '';

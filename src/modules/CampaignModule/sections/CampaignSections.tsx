@@ -71,7 +71,7 @@ export default async function CampaignSection() {
             >
               <div
                 className="rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition duration-300 h-full flex flex-col justify-between p-6"
-                style={{ backgroundColor: appColors.white }}
+                style={{ backgroundColor: appColors.white}}
               >
 
                 <div>

@@ -34,11 +34,11 @@ const AboutSection = () => {
             </p>
             <div className="mt-10">
               <a
-                href="#kontak"
+                href="/campaigns"
                 className="text-white font-semibold py-3 px-8 rounded-lg text-lg shadow-md transform transition-all duration-300 ease-in-out hover:opacity-90 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
                 style={{ backgroundColor: appColors.babyPinkAccent }}
               >
-                Jadi Bagian dari Kami
+                Lihat Kampanye
               </a>
             </div>
           </div>

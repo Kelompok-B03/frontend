@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { getAdminStatistics, AdminStatistics, getAnnouncements, Announcement } from '@/modules/AdminModule/service';
 import { appColors } from '@/constants/colors';
-import { ChartBarIcon, UserGroupIcon, GlobeAltIcon, ClockIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, UserGroupIcon, GlobeAltIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function DashboardSection() {
@@ -26,17 +26,21 @@ export default function DashboardSection() {
       }
     };
 
-    const fetchAnnouncements = async () => {
+  const fetchAnnouncements = async () => {
       setAnnouncementsLoading(true);
       try {
         const response = await getAnnouncements();
-        setAnnouncements(response.content || []);
+        const announcements = Array.isArray(response) 
+          ? response 
+          : (response.content || []);
+        setAnnouncements(announcements);
+        console.log("Fetched announcements:", announcements); // Debug log
       } catch (err) {
         console.error("Failed to fetch announcements:", err);
       } finally {
         setAnnouncementsLoading(false);
       }
-    };
+  };
 
     fetchStatistics();
     fetchAnnouncements();
@@ -82,13 +86,6 @@ export default function DashboardSection() {
       color: '#6366F1', // indigo
       bgColor: '#EEF2FF' // indigo-50
     },
-    {
-      title: 'Pending Campaigns',
-      value: statistics?.pendingCampaigns || 0,
-      icon: ClockIcon,
-      color: '#F59E0B', // amber-500
-      bgColor: '#FEF3C7' // amber-50
-    }
   ];
 
   return (
@@ -96,7 +93,7 @@ export default function DashboardSection() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold" style={{ color: appColors.textDark }}>Admin Dashboard</h1>
         <p className="text-sm" style={{ color: appColors.textDarkMuted }}>
-          Welcome to the admin dashboard. Here's an overview of your platform's status.
+          Welcome to the admin dashboard. Here&apos;s an overview of your platform&apos;s status.
         </p>
       </div>
 

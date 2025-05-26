@@ -21,7 +21,11 @@ export default function AnnouncementsSection() {
     setLoading(true);
     try {
       const response = await getAnnouncements(0, 100); // Get up to 100 announcements
-      setAnnouncements(response.content || []);
+      const announcements = Array.isArray(response) 
+        ? response 
+        : (response.content || []);
+      setAnnouncements(announcements);
+      console.log("Announcements in list view:", announcements); // Debug log
     } catch (err) {
       console.error('Failed to fetch announcements:', err);
       setError('Failed to load announcements. Please try again.');
@@ -31,18 +35,16 @@ export default function AnnouncementsSection() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this announcement?')) {
-      return;
-    }
-
     setIsDeleting(id);
     try {
-      await deleteAnnouncement(id);
-      // Remove the announcement from the list
-      setAnnouncements(prev => prev.filter(announcement => announcement.id !== id));
+      const success = await deleteAnnouncement(id);
+      if (success) {
+        setAnnouncements(prev => prev.filter(announcement => announcement.id !== id));
+        // Use router here
+        router.refresh(); 
+      }
     } catch (err) {
       console.error('Failed to delete announcement:', err);
-      alert('Failed to delete announcement. Please try again.');
     } finally {
       setIsDeleting(null);
     }

@@ -38,7 +38,8 @@ const Navbar = () => {
 
   const baseNavLinks: NavLinkItem[] = [
     { href: '/#home', label: 'Beranda' },
-    { href: '/campaigns', label: 'Kampanye' }
+    { href: '/campaigns', label: 'Kampanye' },
+    { href: '/announcements', label: 'Pengumuman' },
   ];
 
   const dynamicUserLinks: NavLinkItem[] = [];
@@ -169,7 +170,7 @@ const Navbar = () => {
             </div>
             {isAuthenticated && user && !isLoading && (
               <span className="ml-3 lg:ml-4 text-sm hidden lg:block" style={{ color: appColors.textDarkMuted }}>
-                Hi, {user.name.split(' ')[0]}! {/* Show first name */}
+                Hi, <a href={`/profile/me`}>{user.name.split(' ')[0]}!</a>
               </span>
             )}
           </div>

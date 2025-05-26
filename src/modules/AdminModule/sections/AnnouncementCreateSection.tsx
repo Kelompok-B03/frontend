@@ -39,12 +39,19 @@ export default function AnnouncementCreateSection() {
       // Redirect to announcements page after successful creation
       router.push('/admin/announcements');
       router.refresh();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create announcement. Please try again.');
+    } catch (err: unknown) {
+      const errorResponse = err as { 
+        response?: { 
+          data?: { 
+            message?: string 
+          } 
+        } 
+      };
+      setError(errorResponse.response?.data?.message || 'Failed to create announcement. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; // Added closing brace and semicolon here
 
   return (
     <div>

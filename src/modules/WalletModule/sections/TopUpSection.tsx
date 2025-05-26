@@ -10,6 +10,7 @@ export default function TopUpSection() {
   const router = useRouter();
   const [amount, setAmount] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentPhone, setPaymentPhone] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
@@ -23,9 +24,8 @@ export default function TopUpSection() {
   ];
 
   const paymentOptions = [
-    { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
-    { value: 'CREDIT_CARD', label: 'Credit Card' },
-    { value: 'E_WALLET', label: 'E-Wallet' },
+    { value: 'GOPAY', label: 'GoPay' },
+    { value: 'DANA', label: 'DANA' },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +40,11 @@ export default function TopUpSection() {
       setError('Please select a payment method');
       return;
     }
+
+    if (!paymentPhone || !paymentPhone.match(/^08\d{8,11}$/)) {
+      setError('Please enter a valid phone number (08xxxxxxxxx)');
+      return;
+    }
     
     setIsLoading(true);
     setError('');
@@ -49,7 +54,7 @@ export default function TopUpSection() {
         throw new Error('User ID is required');
       }
       
-      await topUpWallet(user.id, parseInt(amount), paymentMethod);
+      await topUpWallet(user.id, parseInt(amount), paymentMethod, paymentPhone);
       
       setSuccess(true);
       // Redirect after a short delay
@@ -113,6 +118,7 @@ export default function TopUpSection() {
             onChange={(e) => setAmount(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
             placeholder="Enter amount"
+            min="1000"
           />
         </div>
       </div>
@@ -139,6 +145,24 @@ export default function TopUpSection() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-sm font-medium mb-2" style={{ color: appColors.textDark }}>
+          Phone Number for {paymentMethod || 'Payment'}
+        </label>
+        <input
+          type="tel"
+          value={paymentPhone}
+          onChange={(e) => setPaymentPhone(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded"
+          placeholder="08xxxxxxxxx"
+          pattern="^08\d{8,11}$"
+          required
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Enter your {paymentMethod || 'e-wallet'} phone number (starts with 08)
+        </p>
       </div>
       
       <button

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
-type CampaignStatus = 'MENUNGGU_VERIFIKASI' | 'SEDANG_BERLANGSUNG' | 'SELESAI';
+type CampaignStatus = 'MENUNGGU_VERIFIKASI' | 'SEDANG_BERLANGSUNG' | 'SELESAI' | 'WITHDRAWED';
 
 type Campaign = {
   campaignId: string;
@@ -16,6 +16,7 @@ type Campaign = {
   endDate: string;
   fundraiserId: string;
   status: CampaignStatus | { name: CampaignStatus } | string;
+  withdrawed?: boolean;
 };
 
 const appColors = {
@@ -28,6 +29,17 @@ const appColors = {
   babyPinkAccent: '#D94A7B',
   babyTurquoiseAccent: '#36A5A0',
 };
+
+async function apiFetch(url: string, options: RequestInit = {}) {
+  const token = localStorage.getItem('token');
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: token ? `Bearer ${token}` : '',
+    'Content-Type': 'application/json',
+  };
+
+  return fetch(url, { ...options, headers });
+}
 
 export default function MyCampaignDetailSection() {
   const router = useRouter();
@@ -42,7 +54,7 @@ export default function MyCampaignDetailSection() {
 
     const fetchCampaign = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/campaign/${campaignId}`, {
+        const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}`, {
           cache: 'no-store',
         });
         if (!res.ok) throw new Error('Campaign not found');
@@ -59,20 +71,59 @@ export default function MyCampaignDetailSection() {
   }, [campaignId, router]);
 
   const handleDelete = async () => {
-    const confirmDelete = confirm('Yakin ingin menghapus campaign ini?');
-    if (!confirmDelete || !campaignId) return;
+    if (!campaignId || !confirm('Yakin ingin menghapus campaign ini?')) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/campaign/${campaignId}`, {
+      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}`, {
         method: 'DELETE',
       });
 
-      if (!res.ok) throw new Error('Gagal menghapus campaign');
-
+      if (!res.ok) throw new Error();
       alert('Campaign berhasil dihapus.');
       router.push('/my-campaign');
-    } catch (err) {
+    } catch {
       alert('Terjadi kesalahan saat menghapus campaign.');
+    }
+  };
+
+  const handleCompleteCampaign = async () => {
+    if (!campaignId || !confirm('Tandai campaign sebagai selesai?')) return;
+
+    try {
+      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}/complete`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) throw new Error();
+      alert('Campaign berhasil ditandai selesai.');
+      router.push('/my-campaign');
+    } catch {
+      alert('Terjadi kesalahan saat menandai campaign.');
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!campaignId || !confirm('Tarik dana dari campaign ini?')) return;
+
+    try {
+      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}/withdraw`, {
+        method: 'POST',
+      });
+
+      if (!res.ok) throw new Error();
+      alert('Dana berhasil ditarik.');
+
+      setCampaign((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'WITHDRAWED',
+              withdrawed: true,
+            }
+          : prev,
+      );
+    } catch {
+      alert('Terjadi kesalahan saat melakukan withdraw.');
     }
   };
 
@@ -97,12 +148,25 @@ export default function MyCampaignDetailSection() {
       ? Math.min(100, Math.round((campaign.fundsCollected / campaign.targetAmount) * 100))
       : 0;
 
+  const statusText =
+    typeof campaign.status === 'string'
+      ? campaign.status.replace(/_/g, ' ')
+      : campaign.status?.name?.replace(/_/g, ' ') || 'Tidak diketahui';
+
+  const isSelesai =
+    typeof campaign.status === 'string'
+      ? campaign.status === 'SELESAI'
+      : campaign.status?.name === 'SELESAI';
+
+  const isWithdrawed =
+    campaign.withdrawed ||
+    (typeof campaign.status === 'string'
+      ? campaign.status === 'WITHDRAWED'
+      : campaign.status?.name === 'WITHDRAWED');
+
   return (
     <div className="min-h-screen py-12 px-6" style={{ backgroundColor: appColors.lightGrayBg }}>
-      <div
-        className="max-w-2xl mx-auto rounded-xl shadow-lg p-8"
-        style={{ backgroundColor: appColors.white }}
-      >
+      <div className="max-w-2xl mx-auto rounded-xl shadow-lg p-8" style={{ backgroundColor: appColors.white }}>
         <h1 className="text-3xl font-bold mb-4" style={{ color: appColors.textDark }}>
           {campaign.title}
         </h1>
@@ -122,37 +186,68 @@ export default function MyCampaignDetailSection() {
               Rp {campaign.fundsCollected.toLocaleString()}
             </strong>{' '}
             dari{' '}
-            <strong>
-              Rp {campaign.targetAmount.toLocaleString()}
-            </strong>{' '}
+            <strong>Rp {campaign.targetAmount.toLocaleString()}</strong>{' '}
             (
             <span style={{ color: appColors.babyTurquoiseAccent, fontWeight: 600 }}>
               {percentage}%
-            </span>)
+            </span>
+            )
           </p>
         </div>
 
         <div className="text-sm mb-6" style={{ color: appColors.textDarkMuted }}>
           <p>🗓️ Periode: {campaign.startDate} sampai {campaign.endDate}</p>
           <p>👤 ID Fundraiser: {campaign.fundraiserId}</p>
-          <p>📌 Status: {typeof campaign.status === 'string' ? campaign.status.replace(/_/g, ' ') : 'Tidak diketahui'}</p>
+          <p>📌 Status: {statusText}</p>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-between gap-3">
           <Link
             href={`/my-campaign/edit/${campaign.campaignId}`}
-            className="px-5 py-2 rounded-md text-white font-medium text-sm transition"
-            style={{ backgroundColor: appColors.babyTurquoiseAccent }}
+            className={`px-5 py-2 rounded-md text-white font-medium text-sm transition ${
+              isWithdrawed ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            style={{
+              backgroundColor: appColors.babyTurquoiseAccent,
+              pointerEvents: isWithdrawed ? 'none' : 'auto',
+            }}
           >
             ✏️ Edit Campaign
           </Link>
+
+          <button
+            onClick={handleCompleteCampaign}
+            disabled={isWithdrawed}
+            className={`px-5 py-2 rounded-md text-white font-medium text-sm transition ${
+              isWithdrawed ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            style={{ backgroundColor: appColors.babyTurquoiseAccent }}
+          >
+            ✅ Tandai Selesai
+          </button>
+
           <button
             onClick={handleDelete}
-            className="px-5 py-2 rounded-md text-white font-medium text-sm transition"
+            disabled={isWithdrawed}
+            className={`px-5 py-2 rounded-md text-white font-medium text-sm transition ${
+              isWithdrawed ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             style={{ backgroundColor: appColors.babyPinkAccent }}
           >
             🗑️ Hapus Campaign
           </button>
+
+          <button
+            onClick={handleWithdraw}
+            disabled={isWithdrawed || !isSelesai}
+            className={`px-5 py-2 rounded-md text-white font-medium text-sm transition ${
+              isWithdrawed || !isSelesai ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            style={{ backgroundColor: appColors.babyPinkAccent }}
+          >
+            💰 Withdraw Dana
+          </button>
+
           <Link href="/my-campaign">
             <button
               className="px-5 py-2 rounded-md text-sm transition border"

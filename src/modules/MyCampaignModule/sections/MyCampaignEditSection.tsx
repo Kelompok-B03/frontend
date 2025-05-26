@@ -72,9 +72,18 @@ export default function MyCampaignEditSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Token tidak ditemukan. Silakan login ulang.');
+        return;
+      }
+
       const res = await fetch(`http://localhost:8080/api/campaign/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           ...campaign,
           ...form,
@@ -87,6 +96,7 @@ export default function MyCampaignEditSection() {
       router.push(`/my-campaign/${id}`);
     } catch (err) {
       alert('Terjadi kesalahan saat memperbarui campaign.');
+      console.error(err);
     }
   };
 

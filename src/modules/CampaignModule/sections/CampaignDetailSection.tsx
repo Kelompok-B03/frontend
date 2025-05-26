@@ -79,7 +79,7 @@ export default async function CampaignDetailSection({ params }: { params: { id: 
           <p>📌 Status: {campaign.status}</p>
         </div>
 
-        <Link href="/campaign">
+        <Link href="/campaigns">
           <button
             className="mt-4 px-4 py-2 rounded transition"
             style={{

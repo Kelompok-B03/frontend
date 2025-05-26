@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const baseNavLinks: NavLinkItem[] = [
     { href: '/#home', label: 'Beranda' },
-    { href: '/campaigns', label: 'Kampanye' }
+    { href: '/my-campaign', label: 'Kampanye' }
   ];
 
   const dynamicUserLinks: NavLinkItem[] = [];

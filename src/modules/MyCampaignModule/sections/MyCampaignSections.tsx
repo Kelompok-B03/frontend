@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Campaign = {
   campaignId: string;
@@ -47,15 +49,32 @@ export default function MyCampaignSections() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const fundraiserId = 'user-001'; // 🔁 Ganti dengan ID user dari auth/jwt nanti
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) return;
+
       try {
-        const res = await fetch(`http://localhost:8080/api/campaign/user/${fundraiserId}`);
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        const res = await fetch(`http://localhost:8080/api/campaign/user/${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!res.ok) {
           throw new Error('Gagal mengambil data');
         }
+
         const data = await res.json();
         setMyCampaigns(data);
       } catch (err: any) {
@@ -65,8 +84,14 @@ export default function MyCampaignSections() {
       }
     };
 
-    fetchData();
-  }, []);
+    if (user && isAuthenticated) {
+      fetchData();
+    }
+  }, [user, isAuthenticated]);
+
+  if (authLoading || !isAuthenticated) {
+    return <p className="p-8 text-center text-gray-500">Memuat...</p>;
+  }
 
   return (
     <div className="p-8 min-h-screen" style={{ backgroundColor: appColors.lightGrayBg }}>

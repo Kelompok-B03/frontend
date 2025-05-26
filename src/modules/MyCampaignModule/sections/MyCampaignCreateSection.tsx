@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 const appColors = {
   white: '#FFFFFF',
@@ -12,8 +13,21 @@ const appColors = {
   textMuted: '#6B7280',
 };
 
+// Helper fetch dengan token
+async function apiFetch(url: string, options: RequestInit = {}) {
+  const token = localStorage.getItem('token');
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: token ? `Bearer ${token}` : '',
+    'Content-Type': 'application/json',
+  };
+
+  return fetch(url, { ...options, headers });
+}
+
 export default function CreateCampaignPage() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   const [form, setForm] = useState({
     title: '',
@@ -23,20 +37,27 @@ export default function CreateCampaignPage() {
     endDate: '',
   });
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/auth/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     try {
-      const res = await fetch('http://localhost:8080/api/campaign', {
+      const res = await apiFetch('http://localhost:8080/api/campaign', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
           targetAmount: parseInt(form.targetAmount),
-          fundraiserId: 'user-001', // ← Ganti dengan ID user dari auth
+          fundraiserId: user.id,
           status: 'MENUNGGU_VERIFIKASI',
           fundsCollected: 0,
         }),
@@ -49,8 +70,11 @@ export default function CreateCampaignPage() {
       router.push(`/my-campaign/${data.campaignId}`);
     } catch (err) {
       alert('Terjadi kesalahan saat membuat campaign.');
+      console.error(err);
     }
   };
+
+  if (isLoading || !isAuthenticated) return <p className="p-10 text-center">Loading...</p>;
 
   return (
     <div className="min-h-screen px-6 py-10" style={{ backgroundColor: appColors.lightGrayBg }}>

@@ -1,11 +1,13 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { getAdminStatistics, AdminStatistics, getAnnouncements, Announcement } from '@/modules/AdminModule/service';
 import { appColors } from '@/constants/colors';
-import { ChartBarIcon, UserGroupIcon, GlobeAltIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, UserGroupIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
 export default function DashboardSection() {
+  const router = useRouter();
   const [stats, setStats] = useState<AdminStatistics>({
     totalUsers: 0,
     totalCampaigns: 0,
@@ -14,25 +16,38 @@ export default function DashboardSection() {
     totalAmount: 0
   });
   
-  // Replace any[] with a proper type
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
+      // Check if token exists
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
+      if (!token) {
+        setError('No authentication token found. Please login to continue.');
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 2000);
+        return;
+      }
+      
       const statsData = await getAdminStatistics();
-      setStats(statsData);
+      // Make sure all properties have default values if they're missing
+      setStats({
+        totalUsers: statsData?.totalUsers || 0,
+        totalCampaigns: statsData?.totalCampaigns || 0,
+        totalDonations: statsData?.totalDonations || 0,
+        pendingCampaigns: statsData?.pendingCampaigns || 0,
+        totalAmount: statsData?.totalAmount || 0
+      });
       
       const announcementsData = await getAnnouncements();
       const announcementsList = Array.isArray(announcementsData) 
         ? announcementsData 
-        : (announcementsData.content || []);
+        : (announcementsData?.content || []);
       
       // Get the latest 5 announcements
       setAnnouncements(announcementsList.slice(0, 5));
@@ -42,7 +57,11 @@ export default function DashboardSection() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading dashboard...</div>;
@@ -71,14 +90,14 @@ export default function DashboardSection() {
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Stats Grid - Changed to 3 columns */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-6">
         {/* Users stat card */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-sm" style={{ color: appColors.textDarkMuted }}>Total Users</p>
-              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalUsers}</h2>
+              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalUsers || 0}</h2>
             </div>
             <div className="p-3 rounded-full" style={{ backgroundColor: '#FEE2E2' }}>
               <UserGroupIcon className="h-6 w-6" style={{ color: '#EF4444' }} />
@@ -94,7 +113,7 @@ export default function DashboardSection() {
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-sm" style={{ color: appColors.textDarkMuted }}>Total Campaigns</p>
-              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalCampaigns}</h2>
+              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalCampaigns || 0}</h2>
             </div>
             <div className="p-3 rounded-full" style={{ backgroundColor: '#DBEAFE' }}>
               <GlobeAltIcon className="h-6 w-6" style={{ color: '#3B82F6' }} />
@@ -105,37 +124,20 @@ export default function DashboardSection() {
           </Link>
         </div>
 
-        {/* Donations stat card */}
+        {/* Donations stat card - Removed Total Amount text */}
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex justify-between items-center mb-4">
             <div>
               <p className="text-sm" style={{ color: appColors.textDarkMuted }}>Total Donations</p>
-              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalDonations}</h2>
+              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.totalDonations || 0}</h2>
             </div>
             <div className="p-3 rounded-full" style={{ backgroundColor: '#D1FAE5' }}>
               <ChartBarIcon className="h-6 w-6" style={{ color: '#10B981' }} />
             </div>
           </div>
-          <p className="text-sm" style={{ color: appColors.textDarkMuted }}>
-            Total Amount: Rp {stats.totalAmount.toLocaleString()}
-          </p>
         </div>
 
-        {/* Pending campaigns stat card */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <p className="text-sm" style={{ color: appColors.textDarkMuted }}>Pending Approval</p>
-              <h2 className="text-2xl font-bold" style={{ color: appColors.textDark }}>{stats.pendingCampaigns}</h2>
-            </div>
-            <div className="p-3 rounded-full" style={{ backgroundColor: '#FEF3C7' }}>
-              <MegaphoneIcon className="h-6 w-6" style={{ color: '#F59E0B' }} />
-            </div>
-          </div>
-          <Link href="/admin/campaigns" className="text-sm underline" style={{ color: appColors.textDarkMuted }}>
-            View campaigns
-          </Link>
-        </div>
+        {/* Removed the Pending Approval card */}
       </div>
 
       {/* Recent announcements */}
@@ -155,13 +157,13 @@ export default function DashboardSection() {
           <div className="bg-white rounded-lg shadow">
             {announcements.map((announcement, index) => (
               <div 
-                key={announcement.id} 
+                key={announcement?.id || index} 
                 className={`p-4 ${index !== announcements.length - 1 ? 'border-b' : ''}`}
               >
-                <p className="font-medium" style={{ color: appColors.textDark }}>{announcement.title}</p>
+                <p className="font-medium" style={{ color: appColors.textDark }}>{announcement?.title || 'No Title'}</p>
                 <div className="flex justify-between mt-1">
                   <span className="text-xs" style={{ color: appColors.textDarkMuted }}>
-                    {announcement.createdAt ? new Date(announcement.createdAt).toLocaleDateString() : 'N/A'}
+                    {announcement?.createdAt ? new Date(announcement.createdAt).toLocaleDateString() : 'N/A'}
                   </span>
                 </div>
               </div>

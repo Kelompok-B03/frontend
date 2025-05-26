@@ -62,19 +62,6 @@ export const approveCampaign = async (campaignId: string) => {
   }
 };
 
-export const rejectCampaign = async (campaignId: string, reason: string) => {
-  try {
-    const response = await axios.post(
-      `${ADMIN_API_URL}/campaigns/${campaignId}/reject`,
-      { reason },
-      { headers: authHeader() }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error rejecting campaign:', error);
-    throw error;
-  }
-};
 
 export const getUserList = async (page = 0, size = 10) => {
   try {
@@ -253,27 +240,6 @@ export const getCampaignDetails = async (campaignId: string) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching campaign details:', error);
-    throw error;
-  }
-};
-
-export const rejectCampaignAndBlockUser = async (
-  campaignId: string, 
-  rejectionReason: string,
-  blockReason: string
-) => {
-  try {
-    const response = await axios.post(
-      `${ADMIN_API_URL}/campaigns/${campaignId}/reject-with-block`,
-      null,
-      { 
-        headers: authHeader(),
-        params: { rejectionReason, blockReason }
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error rejecting campaign and blocking user:', error);
     throw error;
   }
 };

@@ -8,14 +8,20 @@ interface Transaction {
   type: 'DEPOSIT' | 'WITHDRAWAL';
   description: string;
   createdAt: string;
+  originalType?: string;
 }
 
 interface TransactionListProps {
   transactions: Transaction[];
   showViewAll?: boolean;
+  onTransactionDeleted?: () => void;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ transactions, showViewAll = false }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ 
+  transactions, 
+  showViewAll = false, 
+  onTransactionDeleted 
+}) => {
   if (transactions.length === 0) {
     return <p className="text-center py-4 text-gray-500">No transactions found</p>;
   }
@@ -42,6 +48,8 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, showVie
             type={transaction.type}
             description={transaction.description}
             date={new Date(transaction.createdAt).toLocaleDateString()}
+            originalType={transaction.originalType}
+            onTransactionDeleted={onTransactionDeleted}
           />
         ))}
       </div>

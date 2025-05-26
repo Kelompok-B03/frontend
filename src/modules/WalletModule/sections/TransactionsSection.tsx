@@ -11,6 +11,8 @@ interface Transaction {
   type: 'DEPOSIT' | 'WITHDRAWAL';
   description: string;
   createdAt: string;
+  originalType?: string;
+  campaignId?: string;
 }
 
 interface PageInfo {
@@ -32,35 +34,39 @@ export default function TransactionsSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
+  const fetchTransactions = async () => {
     if (user?.id) {
-      const fetchTransactions = async () => {
-        setLoading(true);
-        try {
-          const response = await getAllTransactions(user.id, pageInfo.currentPage, pageInfo.size);
-          
-          setTransactions(response.content);
-          setPageInfo({
-            totalElements: response.totalElements,
-            totalPages: response.totalPages,
-            currentPage: response.number,
-            size: response.size
-          });
-        } catch (err) {
-          console.error("Failed to fetch transactions:", err);
-          setError('Failed to load transactions. Please try again later.');
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchTransactions();
+      setLoading(true);
+      try {
+        const response = await getAllTransactions(user.id, pageInfo.currentPage, pageInfo.size);
+        
+        setTransactions(response.content);
+        setPageInfo({
+          totalElements: response.totalElements,
+          totalPages: response.totalPages,
+          currentPage: response.number,
+          size: response.size
+        });
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+        setError('Failed to load transactions. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
   }, [user, pageInfo.currentPage, pageInfo.size]);
 
   const handlePageChange = (page: number) => {
     if (page < 0 || page >= pageInfo.totalPages) return;
     setPageInfo(prev => ({ ...prev, currentPage: page }));
+  };
+
+  const handleTransactionDeleted = () => {
+    fetchTransactions();
   };
 
   if (loading) {
@@ -94,6 +100,9 @@ export default function TransactionsSection() {
                 type={transaction.type}
                 description={transaction.description}
                 date={new Date(transaction.createdAt).toLocaleDateString()}
+                originalType={transaction.originalType}
+                campaignId={transaction.campaignId}
+                onTransactionDeleted={handleTransactionDeleted}
               />
             ))}
           </div>

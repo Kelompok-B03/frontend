@@ -1,6 +1,7 @@
 import React from 'react';
 import TransactionItem from './TransactionItem';
 import Link from 'next/link';
+import { appColors } from '@/constants/colors';
 
 interface Transaction {
   id: string;
@@ -23,23 +24,42 @@ const TransactionList: React.FC<TransactionListProps> = ({
   onTransactionDeleted 
 }) => {
   if (transactions.length === 0) {
-    return <p className="text-center py-4 text-gray-500">No transactions found</p>;
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+        <div className="text-6xl mb-4">📭</div>
+        <h3 className="text-xl font-semibold mb-2" style={{ color: appColors.textDark }}>
+          Belum Ada Transaksi
+        </h3>
+        <p className="text-sm" style={{ color: appColors.textDarkMuted }}>
+          Mulai dengan melakukan top-up untuk transaksi pertama Anda
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">
-          {showViewAll ? 'Recent Transactions' : 'Transactions'}
-        </h2>
-        {showViewAll && (
-          <Link href="/wallet/transactions" className="text-blue-600 text-sm">
-            View All
-          </Link>
-        )}
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="p-6 border-b border-gray-100">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl">📋</span>
+            <h2 className="text-xl font-bold" style={{ color: appColors.textDark }}>
+              {showViewAll ? 'Transaksi Terbaru' : 'Semua Transaksi'}
+            </h2>
+          </div>
+          {showViewAll && (
+            <Link 
+              href="/wallet/transactions" 
+              className="text-sm font-medium hover:opacity-80 transition-opacity"
+              style={{ color: appColors.babyTurquoiseAccent }}
+            >
+              Lihat Semua →
+            </Link>
+          )}
+        </div>
       </div>
       
-      <div className="space-y-3">
+      <div className="divide-y divide-gray-100">
         {transactions.map(transaction => (
           <TransactionItem
             key={transaction.id}

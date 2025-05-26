@@ -49,7 +49,7 @@ export default function TransactionsSection() {
         });
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
-        setError('Failed to load transactions. Please try again later.');
+        setError('Gagal memuat transaksi. Silakan coba lagi nanti.');
       } finally {
         setLoading(false);
       }
@@ -70,28 +70,62 @@ export default function TransactionsSection() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return (
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="flex justify-center items-center h-64">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: appColors.babyTurquoiseAccent }}></div>
+            <p style={{ color: appColors.textDarkMuted }}>Memuat transaksi...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-600 p-4 rounded">
-        {error}
-        <button 
-          onClick={() => window.location.reload()} 
-          className="ml-2 underline"
-        >
-          Retry
-        </button>
+      <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center">
+          <div className="text-6xl mb-4">❌</div>
+          <h3 className="text-xl font-semibold mb-2" style={{ color: appColors.textDark }}>
+            Terjadi Kesalahan
+          </h3>
+          <p className="text-sm mb-4" style={{ color: appColors.textDarkMuted }}>
+            {error}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="py-2 px-6 rounded-xl font-medium text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: appColors.babyTurquoiseAccent }}
+          >
+            Coba Lagi
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="bg-white shadow rounded-lg p-4">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">📋</span>
+              <h2 className="text-xl font-bold" style={{ color: appColors.textDark }}>
+                Semua Transaksi
+              </h2>
+            </div>
+            <div className="text-sm" style={{ color: appColors.textDarkMuted }}>
+              {pageInfo.totalElements} transaksi
+            </div>
+          </div>
+        </div>
+
+        {/* Transactions */}
         {transactions.length > 0 ? (
-          <div className="divide-y">
+          <div className="divide-y divide-gray-100">
             {transactions.map((transaction) => (
               <TransactionItem 
                 key={transaction.id}
@@ -107,33 +141,45 @@ export default function TransactionsSection() {
             ))}
           </div>
         ) : (
-          <p className="text-center py-6">No transactions found</p>
+          <div className="p-8 text-center">
+            <div className="text-6xl mb-4">📭</div>
+            <h3 className="text-xl font-semibold mb-2" style={{ color: appColors.textDark }}>
+              Belum Ada Transaksi
+            </h3>
+            <p className="text-sm" style={{ color: appColors.textDarkMuted }}>
+              Mulai dengan melakukan top-up untuk transaksi pertama Anda
+            </p>
+          </div>
         )}
       </div>
       
       {/* Pagination */}
       {pageInfo.totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex space-x-1">
+        <div className="flex justify-center mt-8">
+          <div className="flex items-center space-x-2 bg-white rounded-2xl shadow-lg p-2">
             <button
               onClick={() => handlePageChange(pageInfo.currentPage - 1)}
               disabled={pageInfo.currentPage === 0}
-              className="px-4 py-2 border rounded-md disabled:opacity-50"
+              className="px-4 py-2 rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              style={{ color: appColors.textDark }}
             >
-              Previous
+              ← Sebelumnya
             </button>
             
             {Array.from({ length: pageInfo.totalPages }).map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => handlePageChange(idx)}
-                className={`px-4 py-2 border rounded-md ${
-                  pageInfo.currentPage === idx ? 'text-white' : ''
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                  pageInfo.currentPage === idx ? 'text-white shadow-md' : 'hover:bg-gray-50'
                 }`}
                 style={{ 
                   backgroundColor: pageInfo.currentPage === idx 
                     ? appColors.babyTurquoiseAccent 
-                    : 'transparent' 
+                    : 'transparent',
+                  color: pageInfo.currentPage === idx 
+                    ? appColors.white 
+                    : appColors.textDark
                 }}
               >
                 {idx + 1}
@@ -143,9 +189,10 @@ export default function TransactionsSection() {
             <button
               onClick={() => handlePageChange(pageInfo.currentPage + 1)}
               disabled={pageInfo.currentPage === pageInfo.totalPages - 1}
-              className="px-4 py-2 border rounded-md disabled:opacity-50"
+              className="px-4 py-2 rounded-xl font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              style={{ color: appColors.textDark }}
             >
-              Next
+              Selanjutnya →
             </button>
           </div>
         </div>

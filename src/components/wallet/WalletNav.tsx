@@ -18,53 +18,58 @@ export default function WalletNav() {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg mb-6">
-      <div className="flex p-1">
-        <Link
-          href="/wallet/balance"
-          className={`flex-1 py-2 px-4 text-center rounded ${
-            isActive("/wallet/balance")
-              ? "text-white font-medium"
-              : "text-gray-700 hover:bg-gray-50"
-          }`}
-          style={{ 
-            backgroundColor: isActive("/wallet/balance") 
-              ? appColors.babyTurquoiseAccent 
-              : "transparent"
-          }}
-        >
-          Balance
-        </Link>
-        <Link
-          href="/wallet/topup"
-          className={`flex-1 py-2 px-4 text-center rounded ${
-            isActive("/wallet/topup")
-              ? "text-white font-medium"
-              : "text-gray-700 hover:bg-gray-50"
-          }`}
-          style={{ 
-            backgroundColor: isActive("/wallet/topup") 
-              ? appColors.babyTurquoiseAccent 
-              : "transparent"
-          }}
-        >
-          Top Up
-        </Link>
-        <Link
-          href="/wallet/transactions"
-          className={`flex-1 py-2 px-4 text-center rounded ${
-            isActive("/wallet/transactions")
-              ? "text-white font-medium"
-              : "text-gray-700 hover:bg-gray-50"
-          }`}
-          style={{ 
-            backgroundColor: isActive("/wallet/transactions") 
-              ? appColors.babyTurquoiseAccent 
-              : "transparent"
-          }}
-        >
-          Transactions
-        </Link>
+    <div className="mb-8">
+      <div className="bg-gradient-to-r from-blue-50 to-pink-50 rounded-2xl p-1 shadow-sm">
+        <div className="flex space-x-1">
+          <Link
+            href="/wallet/balance"
+            className={`flex-1 py-3 px-6 text-center rounded-xl font-medium transition-all duration-300 ${
+              isActive("/wallet/balance")
+                ? "text-white shadow-md transform scale-105"
+                : "hover:bg-white/50 transition-colors duration-200"
+            }`}
+            style={{ 
+              backgroundColor: isActive("/wallet/balance") 
+                ? appColors.babyTurquoiseAccent 
+                : "transparent",
+              color: isActive("/wallet/balance") ? appColors.white : appColors.textDark
+            }}
+          >
+            💰 Balance
+          </Link>
+          <Link
+            href="/wallet/topup"
+            className={`flex-1 py-3 px-6 text-center rounded-xl font-medium transition-all duration-300 ${
+              isActive("/wallet/topup")
+                ? "text-white shadow-md transform scale-105"
+                : "hover:bg-white/50 transition-colors duration-200"
+            }`}
+            style={{ 
+              backgroundColor: isActive("/wallet/topup") 
+                ? appColors.babyTurquoiseAccent 
+                : "transparent",
+              color: isActive("/wallet/topup") ? appColors.white : appColors.textDark
+            }}
+          >
+            💳 Top Up
+          </Link>
+          <Link
+            href="/wallet/transactions"
+            className={`flex-1 py-3 px-6 text-center rounded-xl font-medium transition-all duration-300 ${
+              isActive("/wallet/transactions")
+                ? "text-white shadow-md transform scale-105"
+                : "hover:bg-white/50 transition-colors duration-200"
+            }`}
+            style={{ 
+              backgroundColor: isActive("/wallet/transactions") 
+                ? appColors.babyTurquoiseAccent 
+                : "transparent",
+              color: isActive("/wallet/transactions") ? appColors.white : appColors.textDark
+            }}
+          >
+            📋 Transactions
+          </Link>
+        </div>
       </div>
     </div>
   );

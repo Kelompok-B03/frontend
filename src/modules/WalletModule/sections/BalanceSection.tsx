@@ -11,6 +11,7 @@ interface Transaction {
   type: 'DEPOSIT' | 'WITHDRAWAL';
   description: string;
   createdAt: string;
+  originalType?: string;
 }
 
 export default function BalanceSection() {
@@ -20,29 +21,34 @@ export default function BalanceSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (user?.id) {
-      const fetchData = async () => {
-        try {
-          setLoading(true);
-          // Fetch wallet balance
-          const balanceData = await getWalletBalance(user.id);
-          setBalance(balanceData.balance);
-          
-          // Fetch recent transactions (5)
-          const transactionsData = await getRecentTransactions(user.id, 5);
-          setRecentTransactions(transactionsData);
-        } catch (err) {
-          console.error('Error fetching wallet data:', err);
-          setError('Failed to load wallet data. Please try again later.');
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      fetchData();
+      try {
+        setLoading(true);
+        // Fetch wallet balance
+        const balanceData = await getWalletBalance(user.id);
+        setBalance(balanceData.balance);
+        
+        // Fetch recent transactions (5)
+        const transactionsData = await getRecentTransactions(user.id, 5);
+        setRecentTransactions(transactionsData);
+      } catch (err) {
+        console.error('Error fetching wallet data:', err);
+        setError('Failed to load wallet data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [user]);
+
+  const handleTransactionDeleted = () => {
+    // Refresh data when a transaction is deleted
+    fetchData();
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
@@ -68,7 +74,11 @@ export default function BalanceSection() {
   return (
     <div>
       <BalanceCard balance={balance} />
-      <TransactionList transactions={recentTransactions} showViewAll={true} />
+      <TransactionList 
+        transactions={recentTransactions} 
+        showViewAll={true} 
+        onTransactionDeleted={handleTransactionDeleted}
+      />
     </div>
   );
 }

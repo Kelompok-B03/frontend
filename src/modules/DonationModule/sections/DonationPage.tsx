@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import DonationCard from './DonationCard';
 import { appColors } from '@/constants/colors';
-import { useAuth } from '@/contexts/AuthContext';
 
 type Donation = {
   donationId: string;
@@ -17,10 +16,8 @@ const DonationPage: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (user?.id) {
       const fetchDonations = async () => {
       try {
         const token = localStorage.getItem('token')
@@ -46,18 +43,17 @@ const DonationPage: React.FC = () => {
       };
 
       fetchDonations();
-    }
-  }, [user]);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Your Donations</h1>
+    <div className="min-h-screen px-4 py-6" style={{ backgroundColor: appColors.white }}>
+      <h1 className="text-2xl font-bold mb-4" style={{ color: appColors.textDarkMuted }}>Your Donations</h1>
       {loading ? (
-        <p className="text-gray-500">Loading donations...</p>
+        <p style={{ color: appColors.textDarkMuted }}>Loading donations...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p style={{ color: appColors.errorRedText }}>{error}</p>
       ) : donations.length === 0 ? (
-        <p className="text-gray-500">You haven’t made any donations yet.</p>
+        <p style={{ color: appColors.textDarkMuted }}>You haven’t made any donations yet.</p>
       ) : (
         <div>
           {donations.map((donation) => (

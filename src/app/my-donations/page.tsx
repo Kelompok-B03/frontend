@@ -1,14 +1,13 @@
 import React from 'react'
 import DonationPage from '@/modules/DonationModule/sections/DonationPage';
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
+import DonationModule from '@/modules/DonationModule';
 
 export default function DonationsRoute() {
   return (
     <div>
-        <Navbar />
-        <DonationPage />
-        <Footer />
+        <DonationModule>
+          <DonationPage />
+        </DonationModule>
     </div>
   );
 }

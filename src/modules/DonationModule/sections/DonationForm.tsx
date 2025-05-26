@@ -65,8 +65,12 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
       // Show success pop-up
       setIsSuccess(true);
 
-    } catch (err: any) {
-      setErrorMessage(err.message);
+    } catch (err) {
+      if (err instanceof Error){
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage('Terjadi kesalahan pada sistem.');
+      }
     } finally {
       setIsLoading(false);
     }

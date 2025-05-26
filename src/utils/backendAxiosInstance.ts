@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const walletAxiosInstance = axios.create({
+const backendAxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080',
 });
 
 // Add the same token interceptor
-walletAxiosInstance.interceptors.request.use(
+backendAxiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -18,4 +18,4 @@ walletAxiosInstance.interceptors.request.use(
   }
 );
 
-export default walletAxiosInstance;
+export default backendAxiosInstance;

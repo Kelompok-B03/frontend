@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export const MenuIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -12,10 +13,23 @@ export const XIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   </svg>
 );
 
-export const GatherLoveIcon = ({ className = "w-8 h-8" }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    <path fillRule="evenodd" d="M12 21.75c-2.759 0-5.36-1.053-7.373-2.913C2.93 17.28 2.25 14.424 2.25 12c0-2.424.68-5.28 2.377-6.837C6.64 3.303 9.241 2.25 12 2.25s5.36 1.053 7.373 2.913C21.07 6.72 21.75 9.576 21.75 12c0 2.424-.68 5.28-2.377 6.837C17.36 20.697 14.759 21.75 12 21.75zM12 4.5A7.491 7.491 0 005.858 6.534a9.955 9.955 0 00-1.608 4.687 9.955 9.955 0 001.608 4.687A7.491 7.491 0 0012 19.5a7.491 7.491 0 006.142-2.992 9.955 9.955 0 001.608-4.687 9.955 9.955 0 00-1.608-4.687A7.491 7.491 0 0012 4.5zm0 4.725a.75.75 0 01.75.75v2.25H15a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H9a.75.75 0 010-1.5h2.25V9.975a.75.75 0 01.75-.75z" clipRule="evenodd" />
-  </svg>
+type GatherLoveIconProps = {
+  className?: string;
+  altText?: string;
+};
+
+export const GatherLoveIcon = ({
+  className = "w-8 h-8",
+  altText = "GatherLove Logo"
+}: GatherLoveIconProps) => (
+  <Image
+    src="/logo.png"
+    alt={altText}
+    className={className}
+    width={32}
+    height={32}
+    priority
+  />
 );
 
 export const CampaignIcon = ({ className = "w-8 h-8" }: { className?: string }) => (

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { appColors } from '@/constants/colors';
+import backendAxiosInstance from '@/utils/backendAxiosInstance'; // sesuaikan path
 
 interface DonationFormProps {
   campaignId: string;
@@ -38,35 +39,24 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
       return;
     }
 
-    // Show loading pop-up
     setIsLoading(true);
     setErrorMessage('');
 
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8080/api/donations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          campaignId: campaignId,
-          amount: intAmount,
-          message: message,
-        }),
+      await backendAxiosInstance.post('/api/donations', {
+        campaignId: campaignId,
+        amount: intAmount,
+        message: message,
       });
 
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err);
-      }
-
-      // Show success pop-up
       setIsSuccess(true);
-
-    } catch (err) {
-      if (err instanceof Error){
+    } catch (err: unknown) {
+      console.error('Error saat donasi:', err);
+    
+      if (typeof err === 'object' && err !== null && 'response' in err) {
+        const axiosErr = err as { response?: { data?: string } };
+        setErrorMessage(axiosErr.response?.data || 'Terjadi kesalahan pada sistem.');
+      } else if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
         setErrorMessage('Terjadi kesalahan pada sistem.');
@@ -134,28 +124,28 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow text-center" style={{ backgroundColor: appColors.white }}>
             <h1 className="text-3xl font-bold mb-2" style={{ color: appColors.textDark }}>
-                Pembayaran Berhasil
-              </h1>
-              <p className="text-lg mb-6" style={{ color: appColors.textDarkMuted }}>
-                Terima kasih telah menyumbangkan donasi.
-              </p>
-        
-              <div className="flex gap-4">
-                <button
-                  onClick={() => router.push('/')}
-                  className="px-6 py-2 rounded"
-                  style={{ backgroundColor: appColors.babyTurquoiseAccent, color: appColors.white }}
-                >
-                  Kembali ke Beranda
-                </button>
-                <button
-                  onClick={() => router.push('/my-donations')}
-                  className="px-6 py-2 rounded"
-                  style={{ backgroundColor: appColors.babyPinkAccent, color: appColors.white }}
-                >
-                  Lihat Donasi Saya
-                </button>
-              </div>
+              Pembayaran Berhasil
+            </h1>
+            <p className="text-lg mb-6" style={{ color: appColors.textDarkMuted }}>
+              Terima kasih telah menyumbangkan donasi.
+            </p>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => router.push('/')}
+                className="px-6 py-2 rounded"
+                style={{ backgroundColor: appColors.babyTurquoiseAccent, color: appColors.white }}
+              >
+                Kembali ke Beranda
+              </button>
+              <button
+                onClick={() => router.push('/my-donations')}
+                className="px-6 py-2 rounded"
+                style={{ backgroundColor: appColors.babyPinkAccent, color: appColors.white }}
+              >
+                Lihat Donasi Saya
+              </button>
+            </div>
           </div>
         </div>
       )}

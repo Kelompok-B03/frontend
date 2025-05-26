@@ -1,5 +1,9 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 type Campaign = {
   campaignId: string;
@@ -24,19 +28,34 @@ const appColors = {
   babyTurquoiseAccent: '#36A5A0',
 };
 
-export default async function CampaignDetailSection({ campaignId }: { campaignId: String }) {
-  const res = await fetch(`http://localhost:8080/api/campaign/${campaignId}`, {
-    cache: 'no-store',
-  });
+export default function CampaignDetailSection({ campaignId }: { campaignId: string }) {
+  const router = useRouter();
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!res.ok) {
-    return notFound();
-  }
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const response = await backendAxiosInstance.get(`/api/campaign/${campaignId}`);
+        setCampaign(response.data);
+      } catch (error) {
+        console.error('Error fetching campaign:', error);
+        router.push('/not-found'); // redirect manual karena tidak bisa pakai notFound() di client
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const campaign: Campaign = await res.json();
-  const percentage = campaign.targetAmount > 0
-    ? Math.min(100, Math.round((campaign.fundsCollected / campaign.targetAmount) * 100))
-    : 0;
+    fetchCampaign();
+  }, [campaignId, router]);
+
+  if (loading) return <p className="p-10 text-center">Loading...</p>;
+  if (!campaign) return null;
+
+  const percentage =
+    campaign.targetAmount > 0
+      ? Math.min(100, Math.round((campaign.fundsCollected / campaign.targetAmount) * 100))
+      : 0;
 
   return (
     <div className="min-h-screen py-12 px-6" style={{ backgroundColor: appColors.lightGrayBg }}>

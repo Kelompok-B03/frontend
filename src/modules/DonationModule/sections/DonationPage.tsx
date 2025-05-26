@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import DonationCard from './DonationCard';
 import { appColors } from '@/constants/colors';
+import backendAxiosInstance from '@/utils/backendAxiosInstance'; // Pastikan path ini benar
 
 type Donation = {
   donationId: string;
@@ -18,31 +19,19 @@ const DonationPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-      const fetchDonations = async () => {
+    const fetchDonations = async () => {
       try {
-        const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/api/donations/self', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-        });
+        const response = await backendAxiosInstance.get('/api/donations/self');
+        setDonations(response.data);
+      } catch (error) {
+        console.error('Error fetching donations:', error);
+        setError('Gagal mengambil data donasi. Silakan coba lagi nanti.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-          setDonations(data);
-        } catch (error) {
-          console.error('Error fetching donations:', error);
-          setError('Failed to connect to the server. Please try again later.');
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchDonations();
+    fetchDonations();
   }, []);
 
   return (

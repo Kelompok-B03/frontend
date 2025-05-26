@@ -15,7 +15,7 @@ interface Transaction {
   paymentMethod?: string;
   reference?: string;
   campaignId?: string;
-  campaignName?: string;
+  originalType?: string;
 }
 
 interface TransactionDetailProps {
@@ -68,6 +68,19 @@ export default function TransactionDetailSection({ transactionId }: TransactionD
     }
   };
 
+  const getTransactionTypeDisplay = () => {
+    switch (transaction?.originalType) {
+      case 'TOP_UP':
+        return 'Top-up';
+      case 'DONATION':
+        return 'Donation';
+      case 'WITHDRAWAL':
+        return 'Campaign Fund Withdrawal';
+      default:
+        return transaction?.type === 'DEPOSIT' ? 'Deposit' : 'Withdrawal';
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -92,7 +105,7 @@ export default function TransactionDetailSection({ transactionId }: TransactionD
     <div className="bg-white shadow rounded-lg p-6">
       <div className="flex justify-between items-center mb-6 pb-4 border-b">
         <h2 className="text-lg font-medium" style={{ color: appColors.textDark }}>
-          {transaction.description}
+          {getTransactionTypeDisplay()}
         </h2>
         <span className={`px-3 py-1 rounded-full text-sm ${
           transaction.status === 'COMPLETED' ? 'bg-green-50 text-green-700' :
@@ -118,7 +131,7 @@ export default function TransactionDetailSection({ transactionId }: TransactionD
         
         <div className="py-3 flex justify-between">
           <dt style={{ color: appColors.textDarkMuted }}>Type</dt>
-          <dd style={{ color: appColors.textDark }}>{transaction.type === 'DEPOSIT' ? 'Deposit' : 'Withdrawal'}</dd>
+          <dd style={{ color: appColors.textDark }}>{getTransactionTypeDisplay()}</dd>
         </div>
         
         {transaction.reference && (
@@ -138,20 +151,18 @@ export default function TransactionDetailSection({ transactionId }: TransactionD
         {transaction.campaignId && (
           <div className="py-3 flex justify-between">
             <dt style={{ color: appColors.textDarkMuted }}>Campaign ID</dt>
-            <dd style={{ color: appColors.textDark }}>{transaction.campaignId}</dd>
+            <dd style={{ color: appColors.textDark }}>#{transaction.campaignId}</dd>
           </div>
         )}
-        
-        {transaction.campaignName && (
-          <div className="py-3 flex justify-between">
-            <dt style={{ color: appColors.textDarkMuted }}>Campaign</dt>
-            <dd style={{ color: appColors.textDark }}>{transaction.campaignName}</dd>
-          </div>
-        )}
+
+        <div className="py-3 flex justify-between">
+          <dt style={{ color: appColors.textDarkMuted }}>Description</dt>
+          <dd style={{ color: appColors.textDark }}>{transaction.description}</dd>
+        </div>
       </dl>
       
-      {/* Only show delete button for DEPOSIT transactions */}
-      {transaction.type === 'DEPOSIT' && transaction.status !== 'COMPLETED' && (
+      {/* Only show delete button for TOP_UP transactions */}
+      {transaction.originalType === 'TOP_UP' && (
         <div className="mt-6 pt-4 border-t">
           <button
             onClick={handleDeleteTransaction}

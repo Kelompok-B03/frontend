@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
 const ADMIN_API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:8080/api/admin';
 
 const authHeader = () => {
@@ -48,18 +47,6 @@ export const getAdminStatistics = async (): Promise<AdminStatistics> => {
   }
 };
 
-export const getPendingCampaigns = async (page = 0, size = 10) => {
-  try {
-    const response = await axios.get(
-      `${ADMIN_API_URL}/campaigns/pending?page=${page}&size=${size}`,
-      { headers: authHeader() }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching pending campaigns:', error);
-    throw error;
-  }
-};
 
 export const approveCampaign = async (campaignId: string) => {
   try {

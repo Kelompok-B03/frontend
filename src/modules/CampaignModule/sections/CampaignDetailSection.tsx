@@ -24,8 +24,8 @@ const appColors = {
   babyTurquoiseAccent: '#36A5A0',
 };
 
-export default async function CampaignDetailSection({ params }: { params: { id: string } }) {
-  const res = await fetch(`http://localhost:8080/api/campaign/${params.id}`, {
+export default async function CampaignDetailSection({ campaignId }: { campaignId: String }) {
+  const res = await fetch(`http://localhost:8080/api/campaign/${campaignId}`, {
     cache: 'no-store',
   });
 
@@ -78,6 +78,18 @@ export default async function CampaignDetailSection({ params }: { params: { id: 
           <p>👤 ID Fundraiser: {campaign.fundraiserId}</p>
           <p>📌 Status: {campaign.status}</p>
         </div>
+
+        <Link href={`/campaigns/${campaignId}/donate`}>
+          <button
+            className="px-4 py-2 rounded transition mr-4"
+            style={{
+              backgroundColor: appColors.babyPinkAccent,
+              color: appColors.white,
+            }}
+          >
+            Donasi Sekarang
+          </button>
+        </Link>
 
         <Link href="/campaigns">
           <button

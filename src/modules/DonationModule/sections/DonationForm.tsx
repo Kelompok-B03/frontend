@@ -14,6 +14,20 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [messageFieldError, setMessageFieldError] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const invalidChars = /[<>=]/;
+
+    if (invalidChars.test(value)) {
+      setMessageFieldError('Pesan tidak boleh mengandung karakter khusus seperti <, >, atau =.');
+    } else {
+      setMessageFieldError('');
+      setMessage(value);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +38,7 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
       return;
     }
 
+    // Show loading pop-up
     setIsLoading(true);
     setErrorMessage('');
 
@@ -36,9 +51,9 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          campaignId,
+          campaignId: campaignId,
           amount: intAmount,
-          message,
+          message: message,
         }),
       });
 
@@ -47,7 +62,9 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
         throw new Error(err);
       }
 
-      router.push('/donation/success');
+      // Show success pop-up
+      setIsSuccess(true);
+
     } catch (err: any) {
       setErrorMessage(err.message);
     } finally {
@@ -77,15 +94,19 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
         </label>
         <textarea
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
+          onChange={handleMessageChange}
+          className="w-full p-2 border rounded mb-2"
         />
+
+        {messageFieldError && (
+          <p className="text-sm text-red-600 mb-4">{messageFieldError}</p>
+        )}
 
         <button
           type="submit"
           className="w-full py-2 text-white font-bold rounded"
           style={{ backgroundColor: appColors.babyPinkAccent }}
-          disabled={isLoading}
+          disabled={isLoading || !!messageFieldError}
         >
           Konfirmasi
         </button>
@@ -101,6 +122,36 @@ const DonationForm: React.FC<DonationFormProps> = ({ campaignId }) => {
             <p className="text-lg font-semibold" style={{ color: appColors.textDark }}>
               Memproses pembayaran...
             </p>
+          </div>
+        </div>
+      )}
+
+      {isSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow text-center" style={{ backgroundColor: appColors.white }}>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: appColors.textDark }}>
+                Pembayaran Berhasil
+              </h1>
+              <p className="text-lg mb-6" style={{ color: appColors.textDarkMuted }}>
+                Terima kasih telah menyumbangkan donasi.
+              </p>
+        
+              <div className="flex gap-4">
+                <button
+                  onClick={() => router.push('/')}
+                  className="px-6 py-2 rounded"
+                  style={{ backgroundColor: appColors.babyTurquoiseAccent, color: appColors.white }}
+                >
+                  Kembali ke Beranda
+                </button>
+                <button
+                  onClick={() => router.push('/my-donations')}
+                  className="px-6 py-2 rounded"
+                  style={{ backgroundColor: appColors.babyPinkAccent, color: appColors.white }}
+                >
+                  Lihat Donasi Saya
+                </button>
+              </div>
           </div>
         </div>
       )}

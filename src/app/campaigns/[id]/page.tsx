@@ -4,7 +4,7 @@ import CampaignDetailSection from '@/modules/CampaignModule/sections/CampaignDet
 const page = ({ params }: { params: { id: string } }) => {
   return (
     <div>
-      <CampaignDetailSection params={params}/>
+      <CampaignDetailSection campaignId={params.id}/>
     </div>
   )
 }

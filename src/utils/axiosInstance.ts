@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:5000',
 });
 
 // Interceptor untuk menambahkan token ke header

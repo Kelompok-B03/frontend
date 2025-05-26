@@ -37,18 +37,18 @@ const AdminModule: React.FC<AdminModuleProps> = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated || !isAdmin) {
-    return null; // Will redirect from the useEffect
+  if (isAuthenticated && isAdmin) {
+    return (
+      <div className="flex">
+        <AdminNav />
+        <div className="ml-64 w-full min-h-screen bg-gray-50 p-6 overflow-auto">
+          {children}
+        </div>
+      </div>
+    );
   }
 
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      <AdminNav />
-      <div className="flex-1 p-8">
-        {children}
-      </div>
-    </div>
-  );
+  return null; // Loading state, auth redirect will happen via useEffect
 };
 
 export default AdminModule;

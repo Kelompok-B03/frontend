@@ -38,7 +38,8 @@ const Navbar = () => {
 
   const baseNavLinks: NavLinkItem[] = [
     { href: '/#home', label: 'Beranda' },
-    { href: '/my-campaign', label: 'Kampanye' }
+    { href: '/campaigns', label: 'Kampanye' },
+    { href: '/announcements', label: 'Pengumuman' },
   ];
 
   const dynamicUserLinks: NavLinkItem[] = [];

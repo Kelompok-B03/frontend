@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 const appColors = {
   white: '#FFFFFF',
@@ -12,18 +13,6 @@ const appColors = {
   textDark: '#374151',
   textMuted: '#6B7280',
 };
-
-// Helper fetch dengan token
-async function apiFetch(url: string, options: RequestInit = {}) {
-  const token = localStorage.getItem('token');
-  const headers = {
-    ...(options.headers || {}),
-    Authorization: token ? `Bearer ${token}` : '',
-    'Content-Type': 'application/json',
-  };
-
-  return fetch(url, { ...options, headers });
-}
 
 export default function CreateCampaignPage() {
   const router = useRouter();
@@ -52,22 +41,16 @@ export default function CreateCampaignPage() {
     if (!user) return;
 
     try {
-      const res = await apiFetch('http://localhost:8080/api/campaign', {
-        method: 'POST',
-        body: JSON.stringify({
-          ...form,
-          targetAmount: parseInt(form.targetAmount),
-          fundraiserId: user.id,
-          status: 'MENUNGGU_VERIFIKASI',
-          fundsCollected: 0,
-        }),
+      const response = await backendAxiosInstance.post('/api/campaign', {
+        ...form,
+        targetAmount: parseInt(form.targetAmount),
+        fundraiserId: user.id,
+        status: 'MENUNGGU_VERIFIKASI',
+        fundsCollected: 0,
       });
 
-      if (!res.ok) throw new Error('Gagal membuat campaign');
-
-      const data = await res.json();
       alert('Campaign berhasil dibuat!');
-      router.push(`/my-campaign/${data.campaignId}`);
+      router.push(`/my-campaign/${response.data.campaignId}`);
     } catch (err) {
       alert('Terjadi kesalahan saat membuat campaign.');
       console.error(err);

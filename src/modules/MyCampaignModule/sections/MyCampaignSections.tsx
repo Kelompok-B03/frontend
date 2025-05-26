@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 type Campaign = {
   campaignId: string;
@@ -63,22 +64,21 @@ export default function MyCampaignSections() {
       if (!user) return;
 
       try {
-        const token = localStorage.getItem('token'); // Ambil token dari localStorage
-        const res = await fetch(`http://localhost:8080/api/campaign/user/${user.id}`, {
+        const token = localStorage.getItem('token');
+
+        const res = await backendAxiosInstance.get(`/campaign/user/${user.id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: token ? `Bearer ${token}` : '',
           },
         });
 
-        if (!res.ok) {
-          throw new Error('Gagal mengambil data');
+        setMyCampaigns(res.data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Terjadi kesalahan');
         }
-
-        const data = await res.json();
-        setMyCampaigns(data);
-      } catch (err: any) {
-        setError(err.message || 'Terjadi kesalahan');
       } finally {
         setIsLoading(false);
       }

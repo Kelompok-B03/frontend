@@ -2,25 +2,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { appColors } from "@/constants/colors";
-import { HomeIcon, UserGroupIcon, DocumentTextIcon, ClockIcon, ChartBarIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserGroupIcon, DocumentTextIcon, MegaphoneIcon } from '@heroicons/react/24/outline';
 import { GatherLoveIcon } from '@/components/common/Icons';
 
 export default function AdminNav() {
   const pathname = usePathname();
   
   const navItems = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: HomeIcon },
-  { href: "/admin/users", label: "Users", icon: UserGroupIcon },
-  { href: "/admin/campaigns", label: "Campaigns", icon: DocumentTextIcon },
-  { href: "/admin/pending", label: "Pending Verification", icon: ClockIcon },
-  { href: "/admin/announcements", label: "Announcements", icon: MegaphoneIcon },
-  { href: "/admin/reports", label: "Reports", icon: ChartBarIcon },
-];
+    { href: "/admin/dashboard", label: "Dashboard", icon: HomeIcon },
+    { href: "/admin/users", label: "Users", icon: UserGroupIcon },
+    { href: "/admin/campaigns", label: "Campaigns", icon: DocumentTextIcon },
+    { href: "/admin/announcements", label: "Announcements", icon: MegaphoneIcon },
+  ];
 
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="w-64 bg-white shadow-lg h-screen flex flex-col">
+    <div className="fixed top-0 left-0 w-64 bg-white shadow-lg h-screen flex flex-col overflow-y-auto">
       <div className="p-6 border-b">
         <Link href="/admin/dashboard" className="flex items-center space-x-2">
           <GatherLoveIcon className="h-8 w-8" />
@@ -35,7 +33,7 @@ export default function AdminNav() {
         </Link>
       </div>
       
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.href}>

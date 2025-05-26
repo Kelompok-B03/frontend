@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 const appColors = {
   white: '#FFFFFF',
@@ -42,11 +43,9 @@ export default function MyCampaignEditSection() {
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/campaign/${id}`, {
-          cache: 'no-store',
-        });
-        if (!res.ok) throw new Error('Failed to fetch');
-        const data = await res.json();
+        const res = await backendAxiosInstance.get(`/api/campaign/${id}`);
+        const data = res.data;
+
         setCampaign(data);
         setForm({
           title: data.title,
@@ -55,7 +54,7 @@ export default function MyCampaignEditSection() {
           startDate: data.startDate,
           endDate: data.endDate,
         });
-      } catch (err) {
+      } catch {
         alert('Gagal memuat data campaign.');
         router.replace('/not-found');
       } finally {
@@ -72,26 +71,12 @@ export default function MyCampaignEditSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Token tidak ditemukan. Silakan login ulang.');
-        return;
-      }
-
-      const res = await fetch(`http://localhost:8080/api/campaign/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...campaign,
-          ...form,
-          targetAmount: parseInt(form.targetAmount),
-        }),
+      await backendAxiosInstance.put(`/api/campaign/${id}`, {
+        ...campaign,
+        ...form,
+        targetAmount: parseInt(form.targetAmount),
       });
 
-      if (!res.ok) throw new Error('Update failed');
       alert('Campaign berhasil diperbarui.');
       router.push(`/my-campaign/${id}`);
     } catch (err) {

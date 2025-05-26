@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 type CampaignStatus = 'MENUNGGU_VERIFIKASI' | 'SEDANG_BERLANGSUNG' | 'SELESAI' | 'WITHDRAWED';
 
@@ -30,17 +31,6 @@ const appColors = {
   babyTurquoiseAccent: '#36A5A0',
 };
 
-async function apiFetch(url: string, options: RequestInit = {}) {
-  const token = localStorage.getItem('token');
-  const headers = {
-    ...(options.headers || {}),
-    Authorization: token ? `Bearer ${token}` : '',
-    'Content-Type': 'application/json',
-  };
-
-  return fetch(url, { ...options, headers });
-}
-
 export default function MyCampaignDetailSection() {
   const router = useRouter();
   const params = useParams();
@@ -54,13 +44,9 @@ export default function MyCampaignDetailSection() {
 
     const fetchCampaign = async () => {
       try {
-        const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}`, {
-          cache: 'no-store',
-        });
-        if (!res.ok) throw new Error('Campaign not found');
-        const data = await res.json();
-        setCampaign(data);
-      } catch (err) {
+        const res = await backendAxiosInstance.get(`/api/campaign/${campaignId}`);
+        setCampaign(res.data);
+      } catch {
         router.replace('/not-found');
       } finally {
         setLoading(false);
@@ -74,11 +60,7 @@ export default function MyCampaignDetailSection() {
     if (!campaignId || !confirm('Yakin ingin menghapus campaign ini?')) return;
 
     try {
-      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) throw new Error();
+      await backendAxiosInstance.delete(`/api/campaign/${campaignId}`);
       alert('Campaign berhasil dihapus.');
       router.push('/my-campaign');
     } catch {
@@ -90,11 +72,7 @@ export default function MyCampaignDetailSection() {
     if (!campaignId || !confirm('Tandai campaign sebagai selesai?')) return;
 
     try {
-      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}/complete`, {
-        method: 'POST',
-      });
-
-      if (!res.ok) throw new Error();
+      await backendAxiosInstance.post(`/api/campaign/${campaignId}/complete`);
       alert('Campaign berhasil ditandai selesai.');
       router.push('/my-campaign');
     } catch {
@@ -106,13 +84,8 @@ export default function MyCampaignDetailSection() {
     if (!campaignId || !confirm('Tarik dana dari campaign ini?')) return;
 
     try {
-      const res = await apiFetch(`http://localhost:8080/api/campaign/${campaignId}/withdraw`, {
-        method: 'POST',
-      });
-
-      if (!res.ok) throw new Error();
+      await backendAxiosInstance.post(`/api/campaign/${campaignId}/withdraw`);
       alert('Dana berhasil ditarik.');
-
       setCampaign((prev) =>
         prev
           ? {
@@ -125,6 +98,10 @@ export default function MyCampaignDetailSection() {
     } catch {
       alert('Terjadi kesalahan saat melakukan withdraw.');
     }
+  };
+
+  const handleUploadProof = () => {
+    router.push(`/my-campaign/${campaignId}/upload-proof`);
   };
 
   if (loading) {
@@ -247,6 +224,16 @@ export default function MyCampaignDetailSection() {
           >
             💰 Withdraw Dana
           </button>
+
+          {isSelesai && (
+            <button
+              onClick={handleUploadProof}
+              className="px-5 py-2 rounded-md text-white font-medium text-sm transition"
+              style={{ backgroundColor: appColors.babyTurquoiseAccent }}
+            >
+              📤 Upload Bukti Penggunaan Dana
+            </button>
+          )}
 
           <Link href="/my-campaign">
             <button

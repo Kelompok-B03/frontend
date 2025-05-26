@@ -73,6 +73,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await axiosInstance.post('/auth/login', loginData);
       const { token: newAuthToken } = response.data;
+      console.log('Full API Response:', response);         // See the whole response object
+      console.log('API Response Data (response.data):', response.data); // THIS IS CRITICAL
 
       if (newAuthToken) {
         localStorage.setItem('token', newAuthToken);

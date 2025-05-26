@@ -49,7 +49,7 @@ const Navbar = () => {
       // Links for all authenticated users
       dynamicUserLinks.push(
         { href: '/profile', label: 'Akun saya' },
-        { href: '/wallet', label: 'Dompet Saya' }
+        { href: '/wallet/balance', label: 'Dompet Saya' }
       );
 
       // Role-specific links

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getAllTransactions } from '@/modules/WalletModule/service'; 
 import { useAuth } from '@/contexts/AuthContext';
 import TransactionItem from '@/components/wallet/TransactionItem';
@@ -34,7 +34,7 @@ export default function TransactionsSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     if (user?.id) {
       setLoading(true);
       try {
@@ -54,11 +54,11 @@ export default function TransactionsSection() {
         setLoading(false);
       }
     }
-  };
+  }, [user, pageInfo.currentPage, pageInfo.size]);
 
   useEffect(() => {
     fetchTransactions();
-  }, [user, pageInfo.currentPage, pageInfo.size]);
+  }, [fetchTransactions]);
 
   const handlePageChange = (page: number) => {
     if (page < 0 || page >= pageInfo.totalPages) return;

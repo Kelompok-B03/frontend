@@ -36,7 +36,25 @@ export default function TransactionDetailSection({ transactionId }: TransactionD
         setLoading(true);
         try {
           const data = await getTransactionById(user.id, transactionId);
-          setTransaction(data);
+          
+          if (data && data.id !== undefined) {
+            const typedTransaction: Transaction = {
+              id: String(data.id),
+              amount: data.amount,
+              type: data.type as 'DEPOSIT' | 'WITHDRAWAL',
+              description: data.description,
+              createdAt: data.createdAt || data.timestamp, // Fallback to timestamp if createdAt is missing
+              status: data.status as 'COMPLETED' | 'PENDING' | 'FAILED',
+              paymentMethod: data.paymentMethod,
+              reference: data.reference,
+              campaignId: data.campaignId,
+              originalType: data.originalType
+            };
+            
+            setTransaction(typedTransaction);
+          } else {
+            setError('Transaksi tidak memiliki ID yang valid.');
+          }
         } catch (err) {
           console.error("Failed to fetch transaction details:", err);
           setError('Gagal memuat detail transaksi. Silakan coba lagi nanti.');

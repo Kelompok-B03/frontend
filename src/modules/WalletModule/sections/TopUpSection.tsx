@@ -60,9 +60,11 @@ export default function TopUpSection() {
       setTimeout(() => {
         router.push('/wallet/balance');
       }, 1500);
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Error processing top-up:', error);
-      setError(error.response?.data?.message || 'Gagal memproses pembayaran. Silakan coba lagi.');
+      setError(error instanceof Error 
+        ? error.message 
+        : 'Gagal memproses pembayaran. Silakan coba lagi.');
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,30 @@
 import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
+interface TransactionData {
+  id?: number | string;
+  type: string;
+  description: string;
+  timestamp: string;
+  amount: number;
+  status?: string;
+  paymentMethod?: string;
+  campaignId?: string;
+  reference?: string;
+  [key: string]: unknown;
+}
+
+// Backend transaction structure
+interface BackendTransaction {
+  id: number | string;
+  type: string;
+  description: string;
+  timestamp: string;
+  amount: number;
+  paymentMethod?: string;
+  campaignId?: string;
+  [key: string]: unknown;
+}
+
 export const getWalletBalance = async (userId: string) => {
   try {
     const response = await backendAxiosInstance.get(`/api/wallet/balance?userId=${userId}`);
@@ -60,13 +85,13 @@ export const getTransactionById = async (userId: string, transactionId: string) 
     const response = await backendAxiosInstance.get(
       `/api/wallet/transactions?userId=${userId}`);
     
-    const transaction = response.data.content?.find((tx: any) => tx.id.toString() === transactionId);
+    const transaction = response.data.content?.find((tx: BackendTransaction) => tx.id.toString() === transactionId);
     if (!transaction) {
       throw new Error('Transaction not found');
     }
     
     return mapTransactionType(transaction);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching transaction details:', error);
     throw error;
   }
@@ -95,7 +120,7 @@ export const deleteTransaction = async (userId: string, transactionId: number) =
 };
 
 // Helper function to map backend transaction types to frontend types
-const mapTransactionType = (transaction: any) => {
+const mapTransactionType = (transaction: TransactionData) => {
   let mappedType;
   let displayDescription = transaction.description;
   

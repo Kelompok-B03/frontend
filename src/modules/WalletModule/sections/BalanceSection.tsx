@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getWalletBalance, getRecentTransactions } from '@/modules/WalletModule/service'; 
 import { useAuth } from '@/contexts/AuthContext';
 import BalanceCard from '@/components/wallet/BalanceCard';
@@ -21,7 +21,7 @@ export default function BalanceSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (user?.id) {
       try {
         setLoading(true);
@@ -39,11 +39,11 @@ export default function BalanceSection() {
         setLoading(false);
       }
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [fetchData]);
 
   const handleTransactionDeleted = () => {
     // Refresh data when a transaction is deleted

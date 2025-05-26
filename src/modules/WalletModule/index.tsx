@@ -22,11 +22,11 @@ const WalletModule: React.FC<WalletModuleProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: appColors.lightGrayBg }}>
-        <div className="flex justify-center items-center min-h-screen">
+      <div style={{ backgroundColor: appColors.lightGrayBg }}>
+        <div className="flex justify-center items-center py-32">
           <div className="flex flex-col items-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: appColors.babyTurquoiseAccent }}></div>
-            <p style={{ color: appColors.textDarkMuted }}>Loading your wallet...</p>
+            <p style={{ color: appColors.textDarkMuted }}>Memuat dompet Anda...</p>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@ const WalletModule: React.FC<WalletModuleProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: appColors.lightGrayBg }}>
+    <div style={{ backgroundColor: appColors.lightGrayBg }}>
       {/* Wallet Header */}
       <div 
         className="relative overflow-hidden py-16"
@@ -48,7 +48,7 @@ const WalletModule: React.FC<WalletModuleProps> = ({ children }) => {
       >
         <div className="container mx-auto max-w-4xl px-4 text-center">
           <h1 className="text-4xl font-bold mb-4" style={{ color: appColors.white }}>
-            💼 My Wallet
+            💼 Dompet Saya
           </h1>
           <p className="text-lg opacity-90" style={{ color: appColors.white }}>
             Kelola saldo dan transaksi Anda dengan mudah
@@ -56,7 +56,7 @@ const WalletModule: React.FC<WalletModuleProps> = ({ children }) => {
           {user && (
             <div className="mt-4 inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm">
               <span className="text-sm font-medium" style={{ color: appColors.white }}>
-                Welcome back, {user.name.split(' ')[0]}! 👋
+                Selamat datang, {user.name.split(' ')[0]}! 👋
               </span>
             </div>
           )}
@@ -64,7 +64,7 @@ const WalletModule: React.FC<WalletModuleProps> = ({ children }) => {
       </div>
 
       {/* Wallet Content */}
-      <div className="container mx-auto max-w-4xl px-4 py-8 -mt-8 relative z-10">
+      <div className="container mx-auto max-w-4xl px-4 py-8 -mt-8 relative z-10 mb-12">
         <WalletNav />
         {children}
       </div>

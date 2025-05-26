@@ -16,7 +16,7 @@ interface TransactionItemProps {
 }
 
 const TransactionItem: React.FC<TransactionItemProps> = ({ 
-  id, amount, type, description, date, originalType, campaignId, onTransactionDeleted
+  id, amount, type, date, originalType, campaignId, onTransactionDeleted
 }) => {
   const { user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);

@@ -1,8 +1,8 @@
-import walletAxiosInstance from '@/utils/walletAxiosInstance';
+import backendAxiosInstance from '@/utils/backendAxiosInstance';
 
 export const getWalletBalance = async (userId: string) => {
   try {
-    const response = await walletAxiosInstance.get(`/api/wallet/balance?userId=${userId}`);
+    const response = await backendAxiosInstance.get(`/api/wallet/balance?userId=${userId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching wallet balance:', error);
@@ -12,7 +12,7 @@ export const getWalletBalance = async (userId: string) => {
 
 export const getRecentTransactions = async (userId: string, limit: number) => {
   try {
-    const response = await walletAxiosInstance.get(
+    const response = await backendAxiosInstance.get(
       `/api/wallet/transactions?userId=${userId}&limit=${limit}`);
     return response.data.map(mapTransactionType);
   } catch (error) {
@@ -23,7 +23,7 @@ export const getRecentTransactions = async (userId: string, limit: number) => {
 
 export const getAllTransactions = async (userId: string, page = 0, size = 10) => {
   try {
-    const response = await walletAxiosInstance.get(
+    const response = await backendAxiosInstance.get(
       `/api/wallet/transactions?userId=${userId}&page=${page}&size=${size}`);
     
     const mappedContent = response.data.content.map(mapTransactionType);
@@ -40,7 +40,7 @@ export const getAllTransactions = async (userId: string, page = 0, size = 10) =>
 
 export const topUpWallet = async (userId: string, amount: number, paymentMethod: string, paymentPhone: string) => {
   try {
-    const response = await walletAxiosInstance.post(
+    const response = await backendAxiosInstance.post(
       `/api/wallet/top-ups`,
       { 
         userId, 
@@ -57,7 +57,7 @@ export const topUpWallet = async (userId: string, amount: number, paymentMethod:
 
 export const getTransactionById = async (userId: string, transactionId: string) => {
   try {
-    const response = await walletAxiosInstance.get(
+    const response = await backendAxiosInstance.get(
       `/api/wallet/transactions?userId=${userId}`);
     
     const transaction = response.data.content?.find((tx: any) => tx.id.toString() === transactionId);
@@ -74,7 +74,7 @@ export const getTransactionById = async (userId: string, transactionId: string) 
 
 export const getTransactionsByType = async (userId: string, type: string) => {
   try {
-    const response = await walletAxiosInstance.get(
+    const response = await backendAxiosInstance.get(
       `/api/wallet/transactions?userId=${userId}&type=${type.toUpperCase()}`);
     return response.data.map(mapTransactionType);
   } catch (error) {
@@ -85,7 +85,7 @@ export const getTransactionsByType = async (userId: string, type: string) => {
 
 export const deleteTransaction = async (userId: string, transactionId: number) => {
   try {
-    const response = await walletAxiosInstance.delete(
+    const response = await backendAxiosInstance.delete(
       `/api/wallet/transactions/${transactionId}?userId=${userId}`);
     return response.data;
   } catch (error) {

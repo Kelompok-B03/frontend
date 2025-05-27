@@ -7,6 +7,7 @@ import backendAxiosInstance from '@/utils/backendAxiosInstance'; // Pastikan pat
 
 type Donation = {
   donationId: string;
+  campaignId: string;
   stateName: string;
   createdAt: string;
   message: string;
@@ -36,18 +37,19 @@ const DonationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen px-4 py-6" style={{ backgroundColor: appColors.white }}>
-      <h1 className="text-2xl font-bold mb-4" style={{ color: appColors.textDarkMuted }}>Your Donations</h1>
+      <h1 className="text-2xl font-bold mb-4" style={{ color: appColors.textDarkMuted }}>Riwayat Donasi</h1>
       {loading ? (
-        <p style={{ color: appColors.textDarkMuted }}>Loading donations...</p>
+        <p style={{ color: appColors.textDarkMuted }}>Memuat Donasi...</p>
       ) : error ? (
         <p style={{ color: appColors.errorRedText }}>{error}</p>
       ) : donations.length === 0 ? (
-        <p style={{ color: appColors.textDarkMuted }}>You haven’t made any donations yet.</p>
+        <p style={{ color: appColors.textDarkMuted }}>Anda belum memiliki riwayat donasi.</p>
       ) : (
         <div>
           {donations.map((donation) => (
             <DonationCard
               key={donation.donationId}
+              campaignId={donation.campaignId}
               stateName={donation.stateName}
               createdAt={donation.createdAt}
               message={donation.message}

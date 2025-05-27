@@ -1,10 +1,16 @@
 import React from 'react'
 import CampaignDetailSection from '@/modules/CampaignModule/sections/CampaignDetailSection'
 
-const page = ({ params }: { params: { id: string } }) => {
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+const page = async ({ params }: PageProps ) => {
+  const { id } = await params;
+  
   return (
     <div>
-      <CampaignDetailSection campaignId={params.id}/>
+      <CampaignDetailSection campaignId={id}/>
     </div>
   )
 }

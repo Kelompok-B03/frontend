@@ -66,7 +66,7 @@ export default function MyCampaignSections() {
       try {
         const token = localStorage.getItem('token');
 
-        const res = await backendAxiosInstance.get(`/campaign/user/${user.id}`, {
+        const res = await backendAxiosInstance.get(`api/campaign/user/${user.id}`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : '',
           },

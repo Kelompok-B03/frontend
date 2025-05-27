@@ -26,6 +26,8 @@ export default function CreateCampaignPage() {
     endDate: '',
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/auth/login');
@@ -38,7 +40,9 @@ export default function CreateCampaignPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
       const response = await backendAxiosInstance.post('/api/campaign', {
@@ -54,6 +58,8 @@ export default function CreateCampaignPage() {
     } catch (err) {
       alert('Terjadi kesalahan saat membuat campaign.');
       console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -126,10 +132,17 @@ export default function CreateCampaignPage() {
           <div className="mt-6 flex justify-end">
             <button
               type="submit"
+              disabled={isSubmitting}
               className="px-5 py-2 rounded-md text-white text-sm"
-              style={{ backgroundColor: appColors.babyTurquoiseAccent }}
+              style={{
+                backgroundColor: isSubmitting
+                  ? appColors.babyPinkAccent
+                  : appColors.babyTurquoiseAccent,
+                opacity: isSubmitting ? 0.7 : 1,
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+              }}
             >
-              Simpan Campaign
+              {isSubmitting ? 'Menyimpan...' : 'Simpan Campaign'}
             </button>
           </div>
         </form>

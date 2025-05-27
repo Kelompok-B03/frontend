@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const baseNavLinks: NavLinkItem[] = [
     { href: '/#home', label: 'Beranda' },
-    { href: '/campaigns', label: 'Kampanye' },
+    { href: '/my-campaign', label: 'Kampanye Saya' },
     { href: '/announcements', label: 'Pengumuman' },
   ];
 
@@ -58,7 +58,7 @@ const Navbar = () => {
         dynamicUserLinks.push({ href: '/my-donations', label: 'Donasi Saya' });
       }
       if (user.roles.includes(ROLES.FUNDRAISER)) {
-        dynamicUserLinks.push({ href: '/my-campaigns', label: 'Kampanye Saya' });
+        dynamicUserLinks.push({ href: '/my-campaign', label: 'Kampanye Saya' });
       }
       if (user.roles.includes(ROLES.ADMIN)) {
         dynamicUserLinks.push({ href: '/admin/dashboard', label: 'Dasbor Admin' });

@@ -38,7 +38,7 @@ const Navbar = () => {
 
   const baseNavLinks: NavLinkItem[] = [
     { href: '/#home', label: 'Beranda' },
-    { href: '/my-campaign', label: 'Kampanye Saya' },
+    { href: '/campaigns', label: 'Kampanye' },
     { href: '/announcements', label: 'Pengumuman' },
   ];
 
@@ -49,16 +49,13 @@ const Navbar = () => {
     if (isAuthenticated && user) {
       // Links for all authenticated users
       dynamicUserLinks.push(
-        { href: '/profile', label: 'Akun saya' },
-        { href: '/wallet/balance', label: 'Dompet Saya' }
+        { href: '/wallet/balance', label: 'Dompet Saya' },
+        { href: '/my-campaign', label: 'Kampanye Saya' }
       );
 
       // Role-specific links
       if (user.roles.includes(ROLES.DONOR)) {
         dynamicUserLinks.push({ href: '/my-donations', label: 'Donasi Saya' });
-      }
-      if (user.roles.includes(ROLES.FUNDRAISER)) {
-        dynamicUserLinks.push({ href: '/my-campaign', label: 'Kampanye Saya' });
       }
       if (user.roles.includes(ROLES.ADMIN)) {
         dynamicUserLinks.push({ href: '/admin/dashboard', label: 'Dasbor Admin' });
